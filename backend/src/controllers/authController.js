@@ -11,7 +11,7 @@ const generateToken = (user) => {
       email: user.email,
       role: user.role,
     },
-    process.env.JWT_SECRET,
+    process.env.JWT_SECRET || 'swadghar_super_secure_jwt_secret_key_2026_indian_food_delivery',
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 };

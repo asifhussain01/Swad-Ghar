@@ -14,7 +14,8 @@ const authenticate = async (req, res, next) => {
       return sendError(res, 'Authentication token missing. Please log in.', 401);
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const jwtSecret = process.env.JWT_SECRET || 'swadghar_super_secure_jwt_secret_key_2026_indian_food_delivery';
+    const decoded = jwt.verify(token, jwtSecret);
     const user = await User.findById(decoded.id);
 
     if (!user) {

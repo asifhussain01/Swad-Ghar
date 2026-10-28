@@ -11,7 +11,11 @@ const AuditLog = require('../models/AuditLog');
 const seedAll = async () => {
   try {
     console.log('[Seed] Connecting to MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI);
+    const mongoUri =
+      process.env.MONGODB_URI ||
+      process.env.MONGO_URI ||
+      'mongodb+srv://asifh9336_db_user:PicR5qIZvqmxfioY@cluster0.es5eufp.mongodb.net/swadghar?retryWrites=true&w=majority';
+    await mongoose.connect(mongoUri);
     console.log('[Seed] Connected.');
 
     // 1. Seed Categories
