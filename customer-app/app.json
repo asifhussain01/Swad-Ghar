@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "SwadGhar",
+    "slug": "swadghar-customer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E23744"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.swadghar.customer"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E23744"
+      },
+      "package": "com.swadghar.customer"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
