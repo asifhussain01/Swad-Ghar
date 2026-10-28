@@ -1,7 +1,18 @@
 import axios from 'axios';
 
+const sanitizeApiUrl = (raw) => {
+  if (!raw || typeof raw !== 'string') return '';
+  let url = raw.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '');
+  if (url && !url.endsWith('/api')) {
+    url = `${url}/api`;
+  }
+  return url;
+};
+
+const configuredUrl = sanitizeApiUrl(import.meta.env.VITE_API_URL);
+
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
+  configuredUrl ||
   (import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://swad-ghar.onrender.com/api');
 
 const api = axios.create({
