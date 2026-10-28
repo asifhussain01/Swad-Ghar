@@ -12,7 +12,7 @@ import {
   Download,
   Store,
 } from 'lucide-react';
-import api from '../api/client';
+import api, { API_BASE_URL } from '../api/client';
 import Navbar from '../components/Navbar';
 import StatusBadge from '../components/StatusBadge';
 
@@ -73,7 +73,7 @@ export default function OrdersPage() {
       if (paymentStatus) params.append('paymentStatus', paymentStatus);
       if (search) params.append('search', search);
 
-      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const baseURL = API_BASE_URL;
       const url = `${baseURL}/admin/orders/export-excel?${params.toString()}`;
 
       const response = await fetch(url, {
