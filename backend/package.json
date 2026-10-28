@@ -5,6 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "build": "node -e \"console.log('SwadGhar Backend: Ready for production (No compilation needed)')\"",
     "dev": "nodemon src/server.js",
     "seed": "node src/utils/seedData.js"
   },

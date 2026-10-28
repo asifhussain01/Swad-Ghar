@@ -1,0 +1,10 @@
+{
+  "name": "swadghar-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SwadGhar Food Ordering Platform",
+  "scripts": {
+    "build": "cd backend && npm install",
+    "start": "cd backend && npm start"
+  }
+}
