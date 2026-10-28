@@ -44,6 +44,25 @@ if (process.env.NODE_ENV !== 'production') {
 // Global API Rate Limiter
 app.use('/api', apiLimiter);
 
+// Root welcoming status endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    message: '🎉 SwadGhar Food Ordering Platform Backend API is running successfully!',
+    platform: 'SwadGhar Shared API Gateway',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      customer: '/api/customer',
+      restaurant: '/api/restaurant',
+      admin: '/api/admin',
+    },
+    database: 'MongoDB Atlas Connected',
+    paymentMethod: 'Cash on Delivery (COD) Only',
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
