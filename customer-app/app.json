@@ -24,6 +24,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ee2df88e-4b4b-4b8d-ae22-16c773aa9041"
+      }
+    },
+    "owner": "asifhussain011"
   }
 }

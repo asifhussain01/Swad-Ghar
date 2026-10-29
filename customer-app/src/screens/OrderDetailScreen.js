@@ -51,7 +51,7 @@ const CANCEL_REASONS = [
 ];
 
 export default function OrderDetailScreen({ route, navigation }) {
-  const { orderId } = route.params;
+  const orderId = route?.params?.orderId || route?.params?.id;
   const { user } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -176,7 +176,10 @@ export default function OrderDetailScreen({ route, navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => (navigation.canGoBack?.() ? navigation.goBack() : navigation.navigate('MainTabs'))}
+          style={styles.backButton}
+        >
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
         <View>

@@ -35,23 +35,27 @@ export default function HomeScreen({ navigation }) {
   const [pureVeg, setPureVeg] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const loadData = async () => {
+  const loadCategories = async () => {
     try {
-      setRefreshing(true);
+      const res = await api.get('/customer/categories');
+      setCategories(res.data || []);
+    } catch (e) {
+      // Ignore
+    }
+  };
+
+  const loadRestaurants = async (isRefresh = false) => {
+    try {
+      if (isRefresh) setRefreshing(true);
       const params = {};
       if (selectedCategory !== 'All') params.cuisine = selectedCategory;
       if (pureVeg) params.isVegetarian = 'true';
-      if (searchQuery) params.search = searchQuery;
+      if (searchQuery.trim()) params.search = searchQuery.trim();
 
-      const [resRests, resCats] = await Promise.all([
-        api.get('/customer/restaurants', { params }),
-        api.get('/customer/categories'),
-      ]);
-
-      setRestaurants(resRests.data || []);
-      setCategories(resCats.data || []);
+      const res = await api.get('/customer/restaurants', { params });
+      setRestaurants(res.data || []);
     } catch (err) {
-      console.log('Error loading home data:', err.message);
+      console.log('Error loading restaurants:', err.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -59,7 +63,11 @@ export default function HomeScreen({ navigation }) {
   };
 
   useEffect(() => {
-    loadData();
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
+    loadRestaurants();
   }, [selectedCategory, pureVeg]);
 
   return (
@@ -87,7 +95,7 @@ export default function HomeScreen({ navigation }) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} colors={[colors.primary]} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadRestaurants(true)} colors={[colors.primary]} />}
       >
         {/* Search Bar */}
         <View style={styles.searchSection}>
@@ -98,7 +106,7 @@ export default function HomeScreen({ navigation }) {
               placeholderTextColor={colors.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              onSubmitEditing={loadData}
+              onSubmitEditing={() => loadRestaurants(true)}
               returnKeyType="search"
               style={styles.searchInput}
             />

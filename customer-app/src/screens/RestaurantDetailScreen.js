@@ -49,7 +49,10 @@ export default function RestaurantDetailScreen({ route, navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Top Header */}
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => (navigation.canGoBack?.() ? navigation.goBack() : navigation.navigate('Home'))}
+          style={styles.backButton}
+        >
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.topBarTitle} numberOfLines={1}>{restaurant.name}</Text>

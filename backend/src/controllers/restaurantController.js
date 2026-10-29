@@ -276,6 +276,31 @@ const getRestaurantOrders = async (req, res, next) => {
   }
 };
 
+// @desc    Get single order by ID for restaurant
+// @route   GET /api/restaurant/orders/:id
+// @access  Restaurant Owner
+const getRestaurantOrderById = async (req, res, next) => {
+  try {
+    const restaurant = await Restaurant.findOne({ ownerId: req.user._id });
+    if (!restaurant) {
+      return sendError(res, 'Restaurant profile not found.', 404);
+    }
+
+    const order = await Order.findOne({
+      _id: req.params.id,
+      restaurantId: restaurant._id,
+    }).populate('customerId', 'name phone email');
+
+    if (!order) {
+      return sendError(res, 'Order not found.', 404);
+    }
+
+    return sendSuccess(res, order, 'Order retrieved successfully.');
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Update order status in workflow
 // @route   PATCH /api/restaurant/orders/:id/status
 // @access  Restaurant Owner
@@ -501,6 +526,7 @@ module.exports = {
   updateMenuItem,
   deleteMenuItem,
   getRestaurantOrders,
+  getRestaurantOrderById,
   updateOrderStatus,
   confirmCODPayment,
   getRestaurantReports,

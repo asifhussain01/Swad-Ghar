@@ -25,6 +25,7 @@ router.delete('/menu/:itemId', ownerAuth, restaurantController.deleteMenuItem);
 
 // Order Management
 router.get('/orders', ownerAuth, restaurantController.getRestaurantOrders);
+router.get('/orders/:id', ownerAuth, restaurantController.getRestaurantOrderById);
 router.patch('/orders/:id/status', ownerAuth, validate(orderStatusUpdateSchema), restaurantController.updateOrderStatus);
 router.patch('/orders/:id/confirm-payment', ownerAuth, restaurantController.confirmCODPayment);
 

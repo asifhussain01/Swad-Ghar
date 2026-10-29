@@ -18,7 +18,10 @@ export default function CartScreen({ navigation }) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => (navigation.canGoBack?.() ? navigation.goBack() : navigation.navigate('Home'))}
+            style={styles.backButton}
+          >
             <ArrowLeft size={20} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Your Cart</Text>
@@ -46,7 +49,10 @@ export default function CartScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => (navigation.canGoBack?.() ? navigation.goBack() : navigation.navigate('Home'))}
+          style={styles.backButton}
+        >
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
         <View>
@@ -77,10 +83,10 @@ export default function CartScreen({ navigation }) {
                 <View style={[styles.vegBadge, { borderColor: item.isVegetarian ? colors.vegGreen : colors.nonVegRed }]}>
                   <View style={[styles.vegDot, { backgroundColor: item.isVegetarian ? colors.vegGreen : colors.nonVegRed }]} />
                 </View>
-                <div>
+                <View>
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemPrice}>₹{item.price} each</Text>
-                </div>
+                </View>
               </View>
 
               <View style={styles.itemRight}>

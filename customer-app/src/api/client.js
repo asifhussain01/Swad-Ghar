@@ -48,11 +48,16 @@ export const getSocketURL = () => {
 
 const api = axios.create({
   baseURL: getBaseURL(),
-  timeout: 15000,
+  timeout: 25000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Non-blocking warm-up ping for Render cold start
+setTimeout(() => {
+  api.get('/health').catch(() => {});
+}, 200);
 
 let authToken = null;
 

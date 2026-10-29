@@ -156,7 +156,10 @@ export default function CheckoutScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => (navigation.canGoBack?.() ? navigation.goBack() : navigation.navigate('Cart'))}
+          style={styles.backButton}
+        >
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Checkout (Cash on Delivery)</Text>

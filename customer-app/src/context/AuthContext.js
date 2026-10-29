@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api, { setAuthHeader } from '../api/client';
+import storage from '../utils/storage';
 
 const AuthContext = createContext(null);
 
@@ -8,8 +9,25 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Restore persisted session when app opens
   useEffect(() => {
-    setLoading(false);
+    const restoreSession = async () => {
+      try {
+        const storedToken = await storage.getItem('swadghar_customer_token');
+        const storedUser = await storage.getItem('swadghar_customer_user');
+        if (storedToken && storedUser) {
+          setToken(storedToken);
+          setUser(storedUser);
+          setAuthHeader(storedToken);
+        }
+      } catch (err) {
+        console.log('Session restore error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
   }, []);
 
   const login = async (email, password) => {
@@ -17,6 +35,8 @@ export const AuthProvider = ({ children }) => {
     setUser(res.data.user);
     setToken(res.data.token);
     setAuthHeader(res.data.token);
+    await storage.setItem('swadghar_customer_token', res.data.token);
+    await storage.setItem('swadghar_customer_user', res.data.user);
     return res.data;
   };
 
@@ -31,13 +51,17 @@ export const AuthProvider = ({ children }) => {
     setUser(res.data.user);
     setToken(res.data.token);
     setAuthHeader(res.data.token);
+    await storage.setItem('swadghar_customer_token', res.data.token);
+    await storage.setItem('swadghar_customer_user', res.data.user);
     return res.data;
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
     setToken(null);
     setAuthHeader(null);
+    await storage.removeItem('swadghar_customer_token');
+    await storage.removeItem('swadghar_customer_user');
   };
 
   return (

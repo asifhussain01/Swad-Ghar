@@ -119,9 +119,9 @@ export const OrderNotificationProvider = ({ children }) => {
       }
     });
 
-    // 3. Fail-Safe 3.5-Second Live Heartbeat
-    // Polls for PLACED orders every 3.5 seconds in the background
-    // Guarantees orders show up automatically without any manual page refresh!
+    // 3. Fail-Safe 8-Second Live Heartbeat
+    // Polls for PLACED orders every 8 seconds as safety net
+    // Guarantees orders show up automatically even if socket reconnects
     const pollInterval = setInterval(async () => {
       if (!initialLoadDoneRef.current) return;
 
@@ -154,7 +154,7 @@ export const OrderNotificationProvider = ({ children }) => {
       } catch (e) {
         // Silent poll ignore
       }
-    }, 3500);
+    }, 8000);
 
     return () => {
       clearInterval(pollInterval);
@@ -179,15 +179,17 @@ export const OrderNotificationProvider = ({ children }) => {
   };
 
   const viewDetailsIncomingOrder = () => {
+    const orderToPass = incomingOrder;
     const orderId = incomingOrder?.orderId || incomingOrder?._id;
     dismissIncomingOrder();
 
     if (orderId && navigationRef.isReady()) {
-      navigationRef.navigate('OrderDetail', { orderId });
+      navigationRef.navigate('OrderDetail', { orderId, order: orderToPass });
     }
   };
 
   const acceptIncomingOrder = async () => {
+    const orderToPass = incomingOrder;
     const orderId = incomingOrder?.orderId || incomingOrder?._id;
     if (!orderId) return;
 
@@ -201,7 +203,7 @@ export const OrderNotificationProvider = ({ children }) => {
       dismissIncomingOrder();
 
       if (navigationRef.isReady()) {
-        navigationRef.navigate('OrderDetail', { orderId });
+        navigationRef.navigate('OrderDetail', { orderId, order: orderToPass });
       }
     } catch (err) {
       const msg = err.message || 'Could not accept order.';

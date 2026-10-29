@@ -9,25 +9,66 @@ import {
   Alert,
   Platform,
   SafeAreaView,
+  BackHandler,
 } from 'react-native';
 import { ArrowLeft, CheckCircle2, Phone, MapPin, Banknote, ShieldAlert } from 'lucide-react-native';
 import api from '../api/client';
 import { colors } from '../theme/colors';
 
 export default function OrderDetailScreen({ route, navigation }) {
-  const { orderId } = route.params;
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const orderId = route?.params?.orderId || route?.params?.id || route?.params?.order?._id;
+  const preloadedOrder = route?.params?.order || null;
+  const [order, setOrder] = useState(preloadedOrder);
+  const [loading, setLoading] = useState(!preloadedOrder);
+  const [errorMsg, setErrorMsg] = useState('');
   const [confirmingCash, setConfirmingCash] = useState(false);
 
+  const handleBack = () => {
+    if (navigation.canGoBack && navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('MainTabs');
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const backSub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => backSub.remove();
+  }, [navigation]);
+
   const fetchOrder = async () => {
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
-      const res = await api.get('/restaurant/orders');
-      const found = res.data?.orders?.find((o) => o._id === orderId);
-      setOrder(found || null);
+      setErrorMsg('');
+      try {
+        const res = await api.get(`/restaurant/orders/${orderId}`);
+        if (res.data) {
+          setOrder(res.data);
+          return;
+        }
+      } catch (directErr) {
+        // Fallback to searching order list
+        const res = await api.get('/restaurant/orders');
+        const found = res.data?.orders?.find((o) => o._id === orderId);
+        if (found) {
+          setOrder(found);
+          return;
+        }
+        throw new Error('Order not found');
+      }
     } catch (err) {
-      console.log('Error fetching order detail:', err);
+      console.log('Error fetching order detail:', err.message);
+      if (!order) {
+        setErrorMsg('Order details could not be loaded.');
+      }
     } finally {
       setLoading(false);
     }
@@ -102,21 +143,63 @@ export default function OrderDetailScreen({ route, navigation }) {
     }
   };
 
-  if (loading || !order) {
+  if (loading && !order) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+            <ArrowLeft size={20} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Loading Order...</Text>
+          <View style={{ width: 36 }} />
+        </View>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={{ marginTop: 12, color: colors.textMuted }}>Fetching order details...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!order) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+            <ArrowLeft size={20} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Order Details</Text>
+          <View style={{ width: 36 }} />
+        </View>
+        <View style={styles.center}>
+          <ShieldAlert size={48} color={colors.error} />
+          <Text style={{ fontSize: 16, fontWeight: '700', marginTop: 12, color: colors.text }}>
+            Order Not Found
+          </Text>
+          <Text style={{ fontSize: 13, color: colors.textMuted, marginTop: 4, textAlign: 'center', paddingHorizontal: 32 }}>
+            {errorMsg || 'We could not load this order. It might have been updated.'}
+          </Text>
+          <TouchableOpacity style={[styles.wfBtn, { marginTop: 16, paddingHorizontal: 24 }]} onPress={fetchOrder}>
+            <Text style={styles.wfBtnText}>Retry</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.wfBtn, { marginTop: 10, backgroundColor: '#64748B', paddingHorizontal: 24 }]}
+            onPress={handleBack}
+          >
+            <Text style={styles.wfBtnText}>Back to Orders</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Order #{order.orderNumber}</Text>
+        <Text style={styles.headerTitle}>Order #{order.orderNumber || ''}</Text>
         <View style={{ width: 36 }} />
       </View>
 

@@ -150,12 +150,12 @@ export default function OrdersScreen({ route, navigation }) {
           renderItem={({ item }) => (
             <View style={styles.orderCard}>
               <View style={styles.orderTop}>
-                <div>
+                <View>
                   <Text style={styles.orderNumber}>#{item.orderNumber}</Text>
                   <Text style={styles.orderTime}>
                     {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </Text>
-                </div>
+                </View>
                 <View style={styles.amountPill}>
                   <Text style={styles.amountText}>₹{item.finalAmount}</Text>
                   <Text style={styles.codSub}>COD</Text>
